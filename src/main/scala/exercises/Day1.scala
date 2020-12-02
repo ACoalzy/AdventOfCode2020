@@ -6,22 +6,15 @@ object Day1 extends DayN {
   override val num = 1
 
   def findPairSum(ints: List[Int], target: Int): Option[(Int, Int)] = {
-    val sumPairs = for {
-      a <- ints
-      b <- ints
-    } yield (a+b) -> (a, b)
-
-    sumPairs.toMap.get(target)
+    val set = ints.toSet
+    set.find(i => set.contains(target-i))
+      .map(i => (i, target - i))
   }
 
   def findTripleSum(ints: List[Int], target: Int): Option[(Int, Int, Int)] = {
-    val sumPairs = for {
-      a <- ints
-      b <- ints
-      c <- ints
-    } yield (a+b+c) -> (a, b, c)
-
-    sumPairs.toMap.get(target)
+    ints.toStream
+      .flatMap(i => findPairSum(ints, target - i).map { case (a, b) => (a, b, i) })
+      .headOption
   }
 
   val parsed = lines.map(_.toInt)
