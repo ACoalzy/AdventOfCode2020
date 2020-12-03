@@ -1,7 +1,6 @@
 package exercises
 
 import util.DayN
-import util.StringUtils._
 
 import scala.util.Try
 

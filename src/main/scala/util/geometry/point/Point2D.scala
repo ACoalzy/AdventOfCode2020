@@ -19,19 +19,5 @@ case class Point2D(x: Int, y: Int) {
 
   def addZ(z: Int) = Point3D(x, y, z)
 
-  def to(target: Point2D, direction: Direction2D): List[Point2D] = {
-    @annotation.tailrec
-    def loop(curr: Point2D, acc: List[Point2D]): List[Point2D] = {
-      curr match {
-        case `target` => acc
-        case p =>
-          val next = curr + direction.mutation
-          loop(next, next :: acc)
-      }
-    }
-
-    loop(this, Nil).reverse
-  }
-
   def neighbours: Set[Point2D] = Direction2D.all.map(_.mutation + this)
 }
