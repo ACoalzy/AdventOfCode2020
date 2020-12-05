@@ -11,7 +11,12 @@ object Day5 extends DayN {
     .replace('B', '1')
     .replace('R', '1')
   )
+  val seatNumbers = binaryStrings.map(s => Integer.parseInt(s, 2)).sorted
 
-  part1(binaryStrings.sorted.takeRight(1).map(s => Integer.parseInt(s, 2)))
+  part1(seatNumbers.last)
+
+  def seriesSum(length: Long): Long = (length * (length + 1)) / 2
+
+  part2(seriesSum(seatNumbers.last) - seatNumbers.sum - seriesSum(seatNumbers.head -1))
 
 }
