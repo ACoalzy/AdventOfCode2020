@@ -1,43 +1,27 @@
 package exercises
 
+import instructions._
 import util.DayN
-import util.StringUtils.RichStringOps
 
 object Day8 extends DayN {
 
   override val num = 8
 
-  case class Instr(action: String, value: Int)
-
-  case class Exit(value: Long, status: Int)
-
-  def recurse(acc: Long, nextIndex: Int, instructions: Array[Instr], history: Set[Int]): Exit = {
-    if (history.contains(nextIndex)) Exit(acc, -1)
-    else if (nextIndex >= instructions.length) Exit(acc, 1)
-    else instructions(nextIndex) match {
-      case Instr("acc", i) => recurse(acc + i, nextIndex + 1, instructions, history + nextIndex)
-      case Instr("jmp", i) => recurse(acc, nextIndex + i, instructions, history + nextIndex)
-      case Instr("nop", _) => recurse(acc, nextIndex + 1, instructions, history + nextIndex)
-    }
-  }
-
-  def findOneChange(instructions: Array[Instr], index: Int): Long = {
+  @annotation.tailrec
+  def fixCorruptInstr(instructions: Vector[Instruction], index: Int): Long = {
     val exit = instructions(index) match {
-      case Instr("jmp", i) => recurse(0, 0, instructions.updated(index, Instr("nop", i)), Set())
-      case Instr("nop", i) => recurse(0, 0, instructions.updated(index, Instr("jmp", i)), Set())
-      case _ => Exit(-1, -1)
+      case Instruction(Jmp, i) => Instructions.run(instructions.updated(index, Instruction(Nop, i)))
+      case Instruction(Nop, i) => Instructions.run(instructions.updated(index, Instruction(Jmp, i)))
+      case _ => Result(-1, Failure)
     }
 
-    if (exit.status == 1) exit.value
-    else findOneChange(instructions, index + 1)
+    if (exit.status == Success) exit.value
+    else fixCorruptInstr(instructions, index + 1)
   }
 
-  val instructions = lines.map { s =>
-    val (action, valueString) = s.splitOn(' ')
-    Instr(action, valueString.toInt)
-  }.toArray
+  val instructions = lines.map(Instruction.fromString).toVector
 
-  part1(recurse(0, 0, instructions, Set.empty[Int]))
-  part2(findOneChange(instructions, 0))
+  part1(Instructions.run(instructions))
+  part2(fixCorruptInstr(instructions, 0))
 
 }
