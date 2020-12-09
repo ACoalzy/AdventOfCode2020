@@ -1,39 +1,28 @@
 package exercises
 
 import util.DayN
+import util.IterableUtils.RichIOps
 
 object Day9 extends DayN {
   override val num = 9
 
-  val preamble = lines.take(25).map(_.toLong)
-  val remaining = lines.drop(25).map(_.toLong)
+  def invalidPreamble(target: Long, preamble: List[Long]): Boolean =
+    !preamble.indices.combinations(2).exists(_.map(preamble.apply).sum == target)
 
-  def firstInvalid(previous: List[Long], remaining: List[Long]): Long = remaining match {
-    case h :: t => {
-      val matches = for {
-        x <- previous
-        y <- previous
-        if (x + y) == h
-      } yield (x, y)
+  def firstInvalid(preambleSize: Int, list: List[Long]): Long = list.indices.drop(preambleSize)
+    .find(i => invalidPreamble(list(i), list.slice(i - preambleSize, i)))
+    .map(i => list(i)).get
 
-      if (matches.isEmpty) h
-      else firstInvalid(h :: previous, t)
-    }
-  }
+  def seriesSumsToTarget(target: Long, list: List[Long]): Option[List[Long]] = list.indices.to(LazyList)
+    .map(i => i -> list.take(i+1).sum).tuples
+    .flatMap {
+      case ((a, sumA), (b, sumB)) => Option.when((sumB - sumA) == target)(list.slice(a, b))
+    }.headOption
 
-  def seriesSum(target: Long, remaining: List[Long]): List[Long] = {
-    def loop(hist: List[Long], rem: List[Long]): List[Long] = {
-      if (hist.sum == target) hist
-      else if (hist.sum < target) loop(rem.head :: hist, rem.tail)
-      else seriesSum(target, remaining.tail)
-    }
+  val nums = lines.map(_.toLong)
+  val firstInvalidNumber = firstInvalid(25, nums)
+  part1(firstInvalidNumber)
 
-    loop(List.empty[Long], remaining)
-  }
-
-  val fi = firstInvalid(preamble, remaining)
-  part1(fi)
-
-  val list = seriesSum(fi, preamble ++ remaining)
-  part2(list.min + list.max)
+  val series = seriesSumsToTarget(firstInvalidNumber, nums).get
+  part2(series.min + series.max)
 }
