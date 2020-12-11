@@ -21,9 +21,19 @@ case class Point2D(x: Int, y: Int) {
 
   def neighbours: Set[Point2D] = Direction2D.all.map(_.mutation + this)
 
-  def surrounding: Set[Point2D] = (for {
-      x <- -1 to 1
-      y <- -1 to 1
-      if (x != 0 || y != 0)
-    } yield Point2D(x, y) + this).toSet
+  def surroundingDirs = (for {
+    x <- -1 to 1
+    y <- -1 to 1
+    if x != 0 || y != 0
+  } yield Point2D(x, y)).toSet
+
+  def surrounding: Set[Point2D] = surroundingDirs.map(_ + this)
+}
+
+object Point2D {
+  def toCharMap(strings: List[String]): Map[Point2D, Char] = strings.map(_.zipWithIndex).zipWithIndex.flatMap {
+    case (chars, y) => chars.map {
+      case (c, x) => Point2D(x, y) -> c
+    }
+  }.toMap
 }
