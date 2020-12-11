@@ -20,4 +20,10 @@ case class Point2D(x: Int, y: Int) {
   def addZ(z: Int) = Point3D(x, y, z)
 
   def neighbours: Set[Point2D] = Direction2D.all.map(_.mutation + this)
+
+  def surrounding: Set[Point2D] = (for {
+      x <- -1 to 1
+      y <- -1 to 1
+      if (x != 0 || y != 0)
+    } yield Point2D(x, y) + this).toSet
 }
