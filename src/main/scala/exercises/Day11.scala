@@ -12,38 +12,28 @@ object Day11 extends DayN {
 
   val seatMap: Map[Point2D, Char] = Point2D.toCharMap(lines)
 
+  def adjacent(point: Point2D, map: Map[Point2D, Char])(move: Point2D): Option[Char] = map.get(point + move)
+
   @annotation.tailrec
-  def loop(map: Map[Point2D, Char]): Map[Point2D, Char] = {
-    val newMap = map.map { case (point, c) =>
-      val count = point.surrounding.toList.flatMap(map.get).count(_ == occ)
-      if ((c == empty) && (count == 0)) point -> occ
-      else if ((c == occ) && (count >= 4)) point -> empty
-      else point -> c
-    }
-
-    if (newMap == map) map else loop(newMap)
-  }
-
-  part1(loop(seatMap).values.count(_ == occ))
-
-  def firstVisible(start: Point2D, map: Map[Point2D, Char])(move: Point2D): Option[Char] = {
-    val result = map.get(start + move)
-    if (result.exists(_ != floor)) result
-    else if (result.isDefined) firstVisible(start + move, map)(move)
-    else None
+  def firstVisible(point: Point2D, map: Map[Point2D, Char])(move: Point2D): Option[Char] = map.get(point + move) match {
+    case None => None
+    case Some(c) if c != floor => Some(c)
+    case _ => firstVisible(point + move, map)(move)
   }
 
   @annotation.tailrec
-  def loop2(map: Map[Point2D, Char]): Map[Point2D, Char] = {
+  def loop(map: Map[Point2D, Char], threshold: Int)(f: (Point2D, Map[Point2D, Char]) => Point2D => Option[Char]): Map[Point2D, Char] = {
     val newMap = map.map { case (point, c) =>
-      val count = point.surroundingDirs.toList.flatMap(firstVisible(point, map)).count(_ == occ)
+      val count = point.surroundingDirs.toList.flatMap(f(point, map)).count(_ == occ)
       if ((c == empty) && (count == 0)) point -> occ
-      else if ((c == occ) && (count >= 5)) point -> empty
+      else if ((c == occ) && (count >= threshold)) point -> empty
       else point -> c
     }
 
-    if (newMap == map) map else loop2(newMap)
+    if (newMap == map) map else loop(newMap, threshold)(f)
   }
 
-  part2(loop2(seatMap).values.count(_ == occ))
+  part1(loop(seatMap, 4)(adjacent).values.count(_ == occ))
+
+  part2(loop(seatMap, 5)(firstVisible).values.count(_ == occ))
 }
