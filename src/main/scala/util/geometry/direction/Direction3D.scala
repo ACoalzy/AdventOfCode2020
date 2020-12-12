@@ -28,11 +28,11 @@ case object Right3D extends Direction3D {
 }
 
 case object Up3D extends Direction3D {
-  val mutation = Point3D(0, -1, 0)
+  val mutation = Point3D(0, 1, 0)
 }
 
 case object Down3D extends Direction3D {
-  val mutation = Point3D(0, 1, 0)
+  val mutation = Point3D(0, -1, 0)
 }
 
 case object Forwards3D extends Direction3D {

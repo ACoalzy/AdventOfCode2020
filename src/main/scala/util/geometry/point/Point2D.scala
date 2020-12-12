@@ -1,6 +1,6 @@
 package util.geometry.point
 
-import util.geometry.direction.Direction2D
+import util.geometry.direction.{AntiClockwise, Clockwise, Direction2D, Rotation}
 
 case class Point2D(x: Int, y: Int) {
   private def mutate(op: (Int, Int) => Int)(p: Point2D): Point2D = Point2D(op(x, p.x), op(y, p.y))
@@ -13,7 +13,10 @@ case class Point2D(x: Int, y: Int) {
 
   def *(i: Int): Point2D = mutate(_ * _)(Point2D(i, i))
 
-  def rotate(dir: Long) = if (dir == 1L) Point2D(y, -x) else Point2D(-y, x)
+  def rotate(rot: Rotation) = rot match {
+    case Clockwise => Point2D(y, -x)
+    case AntiClockwise => Point2D(-y, x)
+  }
 
   def manHattanDist(p: Point2D): Int = math.abs(x - p.x) + math.abs(y - p.y)
 
@@ -33,7 +36,7 @@ case class Point2D(x: Int, y: Int) {
 object Point2D {
   def toCharMap(strings: List[String]): Map[Point2D, Char] = strings.map(_.zipWithIndex).zipWithIndex.flatMap {
     case (chars, y) => chars.map {
-      case (c, x) => Point2D(x, y) -> c
+      case (c, x) => Point2D(x, strings.length - (y+1)) -> c
     }
   }.toMap
 }

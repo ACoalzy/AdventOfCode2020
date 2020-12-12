@@ -4,7 +4,6 @@ import util.geometry.point.Point2D
 
 sealed trait Direction2D {
   def mutation: Point2D
-  def englishLanguageDir: Boolean
 }
 
 object Direction2D {
@@ -20,20 +19,16 @@ object Direction2D {
 
 case object Left extends Direction2D {
   val mutation = Point2D(-1, 0)
-  val englishLanguageDir = false
 }
 
 case object Right extends Direction2D {
   val mutation = Point2D(1, 0)
-  val englishLanguageDir = true
 }
 
 case object Up extends Direction2D {
-  val mutation = Point2D(0, -1)
-  val englishLanguageDir = false
+  val mutation = Point2D(0, 1)
 }
 
 case object Down extends Direction2D {
-  val mutation = Point2D(0, 1)
-  val englishLanguageDir = true
+  val mutation = Point2D(0, -1)
 }
