@@ -44,4 +44,13 @@ case class Point3D(x: Int, y: Int, z: Int) {
 
   def neighbours: Set[Point3D] = Direction3D.all.map(_.mutation + this)
   def neighbours2d: Set[Point3D] = Direction2D.all.map(_.mutation.addZ(0) + this)
+
+  def surroundingDirs = (for {
+    x <- -1 to 1
+    y <- -1 to 1
+    z <- -1 to 1
+    if x != 0 || y != 0 || z != 0
+  } yield Point3D(x, y, z)).toSet
+
+  def surrounding: Set[Point3D] = surroundingDirs.map(_ + this)
 }
