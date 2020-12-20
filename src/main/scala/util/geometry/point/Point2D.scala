@@ -34,7 +34,7 @@ case class Point2D(x: Int, y: Int) {
 }
 
 object Point2D {
-  def toCharMap(strings: List[String]): Map[Point2D, Char] = strings.map(_.zipWithIndex).zipWithIndex.flatMap {
+  def toCharMap(strings: Seq[String]): Map[Point2D, Char] = strings.map(_.zipWithIndex).zipWithIndex.flatMap {
     case (chars, y) => chars.map {
       case (c, x) => Point2D(x, strings.length - (y+1)) -> c
     }
