@@ -77,7 +77,8 @@ object Day20 extends DayN {
       else None
     }
 
-    loop(Point2D(0, 0), tiles, Map())
+//    loop(Point2D(0, 0), tiles, Map())
+    ???
   }
 
 }
